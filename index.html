@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Jogo cobrinha - HTML5- Canvas</title>
+</head>
+<body>
+	<canvas id="palco" width="600" height="600"></canvas>
+	<script type="text/javascript">
+
+		window.onload = function () { // esperar janela carregar 
+			var palco = document.getElementById('palco'); // pegando elemento do html passo id
+			var ctx = palco.getContext("2d"); // no canvas existe o contexto que vai ser feito, no caso aqui 2d
+			document.addEventListener("keydown", keyPush); // espera por evento do teclado 
+
+			setInterval(game, 80); // define um intervalo da função, chama a função jogo
+			const velocidade = 1; // quantas casas a cobra anda quando o game for atualizado, no caso 1 
+
+			var velocidadeX = 0; // a velocidade começa em 0 só anda depois que a cobra andar 
+			var velocidadeY = 0;
+			var pontoX = 10; // escolhe onde eu quero que a cobra comece
+			var pontoY = 15;
+			var tamanhoPonto = 30; // tamanho da maça do jogo 
+			var quantidadePonto = 20;// quantos pontos vai ter a cobra 
+			var macaX = 15; // localização da maça no jogo
+			var macaY = 15;
+
+			var trail = []; // quais elemntos tem no rasto da cobra, começa com um array vazio porque o jogo não começou ainda 
+			tail = 5; // tamanho da calda da cobra 
+
+			function game(){ // função reptinta toda a parte da tela quando a cobra passa
+				pontoX += velocidadeX; // a cobra fica parada até começar o jogo 
+				pontoY += velocidadeY;
+
+				// cada if define se a cobra chegar a borda do jogo voltar ao começo na movimentação
+				if (pontoX < 0) 
+				{
+					pontoX = quantidadePonto-1; // se a cobra vai para a esqueda e chaga até a borda do palco ela precisa ir para o final por isso define 0
+				}
+
+				if (pontoX > quantidadePonto-1)
+				 {
+						pontoX = 0;
+					}
+
+				if (pontoY < 0 ) 
+				{
+					pontoY = quantidadePonto-1;
+				}	
+
+				if (pontoY > quantidadePonto-1) {
+					pontoY = 0;
+				}
+
+
+				ctx.fillStyle = "#AB05F2"; // que define cor vai ter o palco
+                ctx.fillRect(0,0, palco.width, palco.height); // esse comando pinta o palco
+
+				ctx.fillStyle = "#5207F2"; // define a cor da cobra 
+				ctx.fillRect(macaX*tamanhoPonto, macaY*tamanhoPonto, tamanhoPonto,tamanhoPonto); // coloca as posições que quero pintar e aplica a cor 
+
+				ctx.fillStyle = "#23D9B7" ; // defino a cor do palco quando a cobra passa para ficar da mesma cor da cobra 
+
+
+				// define a movimentção da cobra 
+				for (var i = 0; i < trail.length; i++) {
+					ctx.fillRect(trail[i].x*tamanhoPonto, trail[i].y*tamanhoPonto, tamanhoPonto-1, tamanhoPonto-1); // pinto quando a cobra passa, pego a posição do elemento do meu rastro e pinto, tanto com x como com y 
+
+					if (trail[i].x == pontoX && trail[i].y == pontoY) {
+						velocidadeX = 0;
+						velocidadeY = 0; //para a cobra 
+						tail = 5;
+					} // define se a cabeça bater no rabo dá game over, se algum elemento estiver na mesma possição bateram
+				}
+
+				trail.push({x:pontoX, y:pontoY}) // se a cobra não bateu nela mesmo precisa se movimentar, dou um push() para definir a posição atual da cabeça. Criando um objeto 
+
+				while(trail.length > tail){
+					trail.shift(); // tirar a ultima posição do array shift() e tira o primeiro elemento do array
+				}
+
+				// aumentar a cobra quando pego maça
+				if (macaX == pontoX && macaY == pontoY) { 
+					tail ++;
+
+					//reposicionar a maça 
+					macaX = Math.floor(Math.random()*quantidadePonto);
+					macaY = Math.floor(Math.random()*quantidadePonto);
+
+				}
+			}
+
+			// defino as teclas que vão fazer a cobra andar 
+
+			 function keyPush(event){
+
+			 	switch(event.keyCode){
+
+			 		case 37: // direita
+			 		velocidadeX = -velocidade; // pego a velocidade x faço -velocidade para que ele se movimente de uma em uma casa 
+			 		velocidadeY = 0;
+			 		break;
+
+
+			 		case 38:
+			 		velocidadeX = 0;
+			 		velocidadeY = -velocidade;
+			 		break;
+
+			 		case 39:
+			 		velocidadeX = velocidade;
+			 		velocidadeY = 0;
+			 		break;
+
+			 		case 40:
+			 		velocidadeX = 0;
+			 		velocidadeY = velocidade;
+			 		break;
+
+			 		default:
+			 		break;
+
+
+			 	}
+
+			 }
+
+
+		}
+	</script>
+</body>
+</html>
